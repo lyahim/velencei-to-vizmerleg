@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Local Claude Code / tool state (machine-specific, not project data)
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Generated static site (rebuilt by generate_site.py / CI on every DB commit)
+output/site/
+
+scratchpad/

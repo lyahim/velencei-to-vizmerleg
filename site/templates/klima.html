@@ -1,0 +1,188 @@
+<meta charset="UTF-8" />
+<title>Klíma — Velencei-tó vízmérleg</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="./assets/site.css" rel="stylesheet">
+</head>
+<body data-bs-spy="scroll" data-bs-target="#toc" data-bs-offset="80" tabindex="0">
+{{NAV}}
+{{BANNER}}
+
+<div class="container-fluid py-4">
+  <div class="row">
+    <nav class="col-lg-3 d-none d-lg-block toc-sticky" id="toc">
+      <div class="list-group">
+        <a class="list-group-item list-group-item-action" href="#tier1">Tier 1 — fő állítás</a>
+        <a class="list-group-item list-group-item-action ps-4" href="#chart-1">1. Vízháztartás</a>
+        <a class="list-group-item list-group-item-action ps-4" href="#chart-2">2. Párolgás vs. csapadék</a>
+        <a class="list-group-item list-group-item-action ps-4" href="#chart-3">3. Napi vízállás</a>
+        <a class="list-group-item list-group-item-action" href="#tier2">Tier 2 — mechanizmus</a>
+        <a class="list-group-item list-group-item-action ps-4" href="#chart-4">4. Hozzáfolyás összeomlása</a>
+        <a class="list-group-item list-group-item-action ps-4" href="#chart-5">5. Havi anomáliák</a>
+        <a class="list-group-item list-group-item-action ps-4" href="#chart-6">6. Melegedési csíkok</a>
+        <a class="list-group-item list-group-item-action ps-4" href="#chart-7">7. Hőmérséklet és jég</a>
+        <a class="list-group-item list-group-item-action" href="#tier3">Tier 3 — hatás és alkalmazkodás</a>
+        <a class="list-group-item list-group-item-action ps-4" href="#chart-8">8. Nincs túlfolyás</a>
+        <a class="list-group-item list-group-item-action ps-4" href="#chart-9">9. Kiszáradó mellékvizek</a>
+        <a class="list-group-item list-group-item-action ps-4" href="#chart-10">10. Tározói függőség</a>
+        <a class="list-group-item list-group-item-action ps-4" href="#chart-11">11. Párolgás hajtóerői</a>
+        <a class="list-group-item list-group-item-action ps-4" href="#chart-12">12. Kumulált hiány</a>
+      </div>
+    </nav>
+
+    <button class="btn btn-outline-secondary d-lg-none mb-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas">
+      Tartalomjegyzék
+    </button>
+    <div class="offcanvas offcanvas-start d-lg-none" tabindex="-1" id="tocOffcanvas">
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title">Tartalomjegyzék</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+      </div>
+      <div class="offcanvas-body">
+        <div class="list-group">
+          <a class="list-group-item list-group-item-action" href="#chart-1">1. Vízháztartás</a>
+          <a class="list-group-item list-group-item-action" href="#chart-2">2. Párolgás vs. csapadék</a>
+          <a class="list-group-item list-group-item-action" href="#chart-3">3. Napi vízállás</a>
+          <a class="list-group-item list-group-item-action" href="#chart-4">4. Hozzáfolyás összeomlása</a>
+          <a class="list-group-item list-group-item-action" href="#chart-5">5. Havi anomáliák</a>
+          <a class="list-group-item list-group-item-action" href="#chart-6">6. Melegedési csíkok</a>
+          <a class="list-group-item list-group-item-action" href="#chart-7">7. Hőmérséklet és jég</a>
+          <a class="list-group-item list-group-item-action" href="#chart-8">8. Nincs túlfolyás</a>
+          <a class="list-group-item list-group-item-action" href="#chart-9">9. Kiszáradó mellékvizek</a>
+          <a class="list-group-item list-group-item-action" href="#chart-10">10. Tározói függőség</a>
+          <a class="list-group-item list-group-item-action" href="#chart-11">11. Párolgás hajtóerői</a>
+          <a class="list-group-item list-group-item-action" href="#chart-12">12. Kumulált hiány</a>
+        </div>
+      </div>
+    </div>
+
+    <main class="col-lg-9">
+      <h1 id="tier1">Klíma — mind a 12 ábra</h1>
+
+      <section id="chart-1" class="chart-section mb-5">
+        <h2>1. Éves vízháztartás</h2>
+        <div class="chart-panel" data-chart="vizhaztartas" data-controls="true">
+          <canvas></canvas>
+          <p class="chart-note text-muted small"></p>
+        </div>
+      </section>
+
+      <section id="chart-2" class="chart-section mb-5">
+        <h2>2. Párolgás és csapadék</h2>
+        <div class="chart-panel" data-chart="parolgas_csapadek" data-controls="true">
+          <canvas></canvas>
+          <p class="chart-note text-muted small"></p>
+        </div>
+      </section>
+
+      <section id="chart-3" class="chart-section mb-5">
+        <h2>3. Napi vízállás, 2002-2024</h2>
+        <div class="chart-panel" data-chart="napi_vizallas" data-panel="daily" data-controls="true">
+          <canvas></canvas>
+          <p class="chart-note text-muted small"></p>
+        </div>
+        <div class="chart-panel" data-chart="napi_vizallas" data-panel="below_band" data-controls="false">
+          <canvas></canvas>
+        </div>
+      </section>
+
+      <h2 id="tier2" class="mt-5 pt-3 border-top">Tier 2 — mechanizmus és trend</h2>
+
+      <section id="chart-4" class="chart-section mb-5">
+        <h2>4. Vízgyűjtő hozzáfolyás összeomlása</h2>
+        <div class="chart-panel" data-chart="hozzafolyas_osszeomlas" data-panel="annual" data-controls="true">
+          <canvas></canvas>
+          <p class="chart-note text-muted small"></p>
+        </div>
+        <div class="chart-panel" data-chart="hozzafolyas_osszeomlas" data-panel="tributary" data-controls="true">
+          <canvas></canvas>
+        </div>
+      </section>
+
+      <section id="chart-5" class="chart-section mb-5">
+        <h2>5. Havi anomáliák az 1971-2000-es normálhoz képest</h2>
+        <div class="chart-panel" data-chart="havi_anomalia" data-panel="precip" data-controls="false">
+          <canvas></canvas>
+          <p class="chart-note text-muted small"></p>
+        </div>
+        <div class="chart-panel" data-chart="havi_anomalia" data-panel="evap" data-controls="false">
+          <canvas></canvas>
+        </div>
+        <div class="chart-panel" data-chart="havi_anomalia" data-panel="level" data-controls="false">
+          <canvas></canvas>
+        </div>
+      </section>
+
+      <section id="chart-6" class="chart-section mb-5">
+        <h2>6. Melegedési csíkok, 1930-2024</h2>
+        <div class="chart-panel" data-chart="melegedesi_csikok" data-controls="true">
+          <canvas></canvas>
+          <p class="chart-note text-muted small"></p>
+        </div>
+      </section>
+
+      <section id="chart-7" class="chart-section mb-5">
+        <h2>7. Hőmérsékleti rezsim és jég</h2>
+        <div class="chart-panel" data-chart="homerseklet_jeg" data-panel="water_temp" data-controls="true">
+          <canvas></canvas>
+          <p class="chart-note text-muted small"></p>
+        </div>
+        <div class="chart-panel" data-chart="homerseklet_jeg" data-panel="ice" data-controls="false">
+          <canvas></canvas>
+        </div>
+      </section>
+
+      <h2 id="tier3" class="mt-5 pt-3 border-top">Tier 3 — hatás és alkalmazkodás</h2>
+
+      <section id="chart-8" class="chart-section mb-5">
+        <h2>8. A tó már nem folyik túl</h2>
+        <div class="chart-panel" data-chart="nincs_tulfolyas" data-controls="true">
+          <canvas></canvas>
+          <p class="chart-note text-muted small"></p>
+        </div>
+      </section>
+
+      <section id="chart-9" class="chart-section mb-5">
+        <h2>9. Kiszáradó mellékvízfolyások</h2>
+        <div class="chart-panel" data-chart="kiszaradas" data-controls="true">
+          <canvas></canvas>
+          <p class="chart-note text-muted small"></p>
+        </div>
+      </section>
+
+      <section id="chart-10" class="chart-section mb-5">
+        <h2>10. Tározói függőség</h2>
+        <div class="chart-panel" data-chart="tarozoi_fuggoseg" data-panel="lake" data-controls="true">
+          <canvas></canvas>
+          <p class="chart-note text-muted small"></p>
+        </div>
+        <div class="chart-panel" data-chart="tarozoi_fuggoseg" data-panel="reservoirs" data-controls="true">
+          <canvas></canvas>
+        </div>
+      </section>
+
+      <section id="chart-11" class="chart-section mb-5">
+        <h2>11. Párolgás hajtóerő-bontása</h2>
+        <div class="chart-panel" data-chart="parolgas_hajtoero" data-controls="true">
+          <canvas></canvas>
+          <p class="chart-note text-muted small"></p>
+        </div>
+      </section>
+
+      <section id="chart-12" class="chart-section mb-5">
+        <h2>12. Kumulált készlethiány</h2>
+        <div class="chart-panel" data-chart="kumulalt_hiany" data-controls="true">
+          <canvas></canvas>
+          <p class="chart-note text-muted small"></p>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+{{FOOTER}}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script>window.DATA_VERSION = "{{DATA_VERSION}}";</script>
+<script src="./assets/site.js"></script>

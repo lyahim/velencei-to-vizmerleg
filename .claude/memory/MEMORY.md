@@ -1,0 +1,6 @@
+- [Run docs protocol after every /opsx:apply](feedback_docs_after_apply.md) — auto-generate/update required docs at apply completion, don't wait to be asked.
+- [Mirror memory into project repo](feedback_mirror_memory_to_repo.md) — every memory write also gets copied to `.claude/memory/` in the repo itself.
+- [Don't overask diagnostic questions](feedback_dont_overask_diagnostics.md) — one clarifying round max, then investigate directly and ship a robust fix.
+- [Pre-existing test flakes](project_preexisting_test_flakes.md) — default.spec.ts locale flake, auth.spec.ts 'Velence' locator, registration/venue-admin-creation LocaleTabs timeout. Not caused by any specific change.
+- [Remove solved REMARKS.md items](feedback_remarks_removal.md) — a change that fixes a remark deletes that line from REMARKS.md too.
+- [No sharing between apps/public and apps/admin](project_no_sharing_public_admin.md) — two separate applications, copy patterns instead of extracting a shared module.

@@ -1,0 +1,20 @@
+# File Index
+
+Path-alphabetical index of `output/`, `pdfs/`, `scripts/`, `site/`, and `docs/`.
+
+| Path | Purpose |
+|---|---|
+| `.github/workflows/pages.yml` | GitHub Actions workflow. Runs `scripts/generate_site.py` on push to `main` (DB/site-source paths) or manual dispatch, deploys `output/site/` to GitHub Pages via `upload-pages-artifact` + `deploy-pages`. Pages source: Actions, not a branch. |
+| `docs/climate-charts-plan.md` | Data-availability audit of `output/vizmerleg.db` + prioritised 12-chart plan for climate-change visualisation. Tiered chart specs, blocking data-quality items. Implemented by `scripts/generate_site.py` / `site/`. |
+| `docs/file-index.md` | This file. Per-file detail for `output/`, `pdfs/`, `scripts/`, `site/`, and `docs/`. |
+| `docs/known-issues.md` | Curated registry of data-quality defects in `output/vizmerleg.db`. Per-defect scope, years, severity, affected chart ids, Hungarian display note. Read by `scripts/generate_site.py` for chart annotation. Consumer-facing counterpart to `EXTRACTION_GUIDE.md` §14. |
+| `docs/README.md` | `docs/` holds project documentation, not the published site. Site generates to `output/site/`. Pages deploys via GitHub Actions, not this folder. |
+| `docs/vision-extraction.md` | Z.AI GLM-4.6V vision-extraction solution doc. Endpoint, usage, validation protocol, limits. Built for Z.AI document processing. |
+| `output/site/` | Generated static site (gitignored, not version-controlled). Rebuilt by `scripts/generate_site.py` locally or by `.github/workflows/pages.yml` in CI. |
+| `output/vizmerleg.db` | SQLite database. Tables: `documents`, `stations`, `station_metadata_history`, `monthly_balance`, `monthly_station_obs`, `evaporation_inputs`, `daily_obs`, `daily_station_extremes`, `expedition_flows`, `annual_climate_summary`, `historical_monthly`, `release_events`. Primary artifact of PDF extraction pipeline, sole write target. |
+| `output/vizmerleg_inserts.sql` | SQL insert statements exported from `vizmerleg.db`. Frozen historical snapshot, not updated during extraction. |
+| `pdfs/` | Source PDFs, 41 yearbooks, 1986–2025. Filenames un-normalized (accents, commas, spaces, underscores vary by year) — matches `documents.filename` in the DB verbatim, do not rename. |
+| `scripts/generate_site.py` | Reads `output/vizmerleg.db` (read-only), `import_tracker.md`, `docs/known-issues.md` at generate time. Writes 12 pre-aggregated `data/charts/*.json`, 12 raw `data/tables/*.json`, `data/coverage.json`, and the 4 substituted HTML pages into `output/site/`. `python3 scripts/generate_site.py`, no args. |
+| `scripts/render_page.py` | Renders PDF page → 300dpi PNG via pdftoppm, optional crop/zoom. Input stage for `scripts/vision_read.py`. |
+| `scripts/vision_read.py` | Sends rendered PNG to Z.AI GLM-4.6V vision model (Coding Plan endpoint), returns table transcription. Built for Z.AI document processing. See `docs/vision-extraction.md`. |
+| `site/` | Static-site source. `site/templates/{index,klima,adattar,forras}.html` — hand-written Hungarian, Bootstrap 5 markup, placeholders substituted by `scripts/generate_site.py`. `site/assets/site.css`, `site/assets/site.js` — chart-panel hydration (Chart.js), adattár table browser, forrás coverage matrix. Bootstrap 5 + Chart.js load from CDN, no build step. |

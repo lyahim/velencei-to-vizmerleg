@@ -1,0 +1,60 @@
+<meta charset="UTF-8" />
+<title>Forrás — Velencei-tó vízmérleg</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="./assets/site.css" rel="stylesheet">
+</head>
+<body>
+{{NAV}}
+{{BANNER}}
+
+<main class="container py-4">
+  <h1>Forrás és módszertan</h1>
+
+  <section class="mb-4">
+    <h2 class="h4">Eredeti forrás</h2>
+    <p>Az adatok a Közép-dunántúli Vízügyi Igazgatóság (KDT-VIZIG) éves Velencei-tó vízmérleg
+      kiadványaiból származnak, 1986-tól 2025-ig.</p>
+    <p><a href="https://www.kdtvizig.hu/kozep-dunantuli/vizgazdalkodas-vizszolgaltatas/csatolmanyok/velencei-to-vizmerleg/$rppid0x1187710x14_pageNumber/1" target="_blank" rel="noopener">
+      KDT-VIZIG — Velencei-tó vízmérleg kiadványok &rarr;</a></p>
+  </section>
+
+  <section class="mb-4">
+    <h2 class="h4">Módszertan és AI-figyelmeztetés</h2>
+    <p>Az adatokat scannelt és digitális PDF-ekből AI-alapú (nagy nyelvi modell) feldolgozással, táblázatonként,
+      egyesével nyerték ki egy emberi felügyelet melletti folyamattal. A modell soronként egyszer olvassa be
+      az értékeket; kétértelmű esetben a mező üresen (NULL) marad, nem becsül és nem számol vissza hiányzó
+      adatot. Ennek ellenére a feldolgozás hibázhat: rosszul olvasott számjegy, elcsúszott oszlopcímke,
+      félreértett mértékegység. Az adatok tehát <strong>eltérhetnek az eredeti forrásdokumentumtól</strong>,
+      különösen a régebbi, szkennelt évkönyveknél.</p>
+    <p>Ismert hibák és korlátozások a <code>docs/known-issues.md</code> nyilvántartásban, a hozzájuk tartozó
+      ábrákon feltüntetve.</p>
+  </section>
+
+  <section class="mb-4">
+    <h2 class="h4">Lefedettségi mátrix</h2>
+    <p>Év × tábla bontásban mutatja, hol van adat, hol folyamatban a feldolgozás, hol szándékosan
+      kihagyott, és hol megerősítésre váró.</p>
+    <div class="mb-2 small">
+      <span class="badge coverage-present">jelen</span>
+      <span class="badge coverage-pending">feldolgozás alatt</span>
+      <span class="badge coverage-skip">szándékosan kihagyva</span>
+      <span class="badge coverage-unconfirmed">megerősítésre vár</span>
+      <span class="badge coverage-absent">nincs ilyen adat</span>
+      <span class="badge coverage-unknown">ismeretlen</span>
+    </div>
+    <div id="coverage-matrix" class="table-responsive"></div>
+  </section>
+
+  <section class="mb-4">
+    <h2 class="h4">Offline működés</h2>
+    <p>Az oldal Bootstrap 5-öt és Chart.js-t CDN-ről tölt be. Internetkapcsolat nélkül a navigáció és a
+      szöveges tartalom működik, de az ábrák nem jelennek meg.</p>
+  </section>
+</main>
+
+{{FOOTER}}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>window.DATA_VERSION = "{{DATA_VERSION}}";</script>
+<script src="./assets/site.js"></script>
