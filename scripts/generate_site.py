@@ -17,6 +17,7 @@ ASSETS_DIR = "site/assets"
 OUT_DIR = "output/site"
 
 DATA_VERSION = datetime.now().strftime("%Y-%m-%d %H:%M")
+GITHUB_URL = "https://github.com/lyahim/velencei-to-vizmerleg"
 
 TABLES = [
     "documents", "stations", "station_metadata_history", "monthly_balance",
@@ -786,13 +787,15 @@ BANNER_HTML = """<div class="alert alert-warning banner-caveat mb-0 rounded-0 te
 </div>"""
 
 
-def render_footer():
+def render_footer(last_processed_year):
     return f"""<footer class="text-center text-muted small py-4 mt-5 border-top">
-  Adatállapot: {DATA_VERSION} &middot; <a href="forras.html">Forrás és módszertan</a>
+  Adatállapot: {DATA_VERSION} &middot; adatok {last_processed_year}-ig &middot;
+  <a href="forras.html">Forrás és módszertan</a> &middot;
+  <a href="{GITHUB_URL}" target="_blank" rel="noopener">GitHub</a>
 </footer>"""
 
 
-def render_pages(data_dir):
+def render_pages(data_dir, last_processed_year):
     os.makedirs(OUT_DIR, exist_ok=True)
     for name in ["index", "klima", "adattar", "forras"]:
         src = os.path.join(TEMPLATE_DIR, f"{name}.html")
@@ -800,7 +803,7 @@ def render_pages(data_dir):
             html = f.read()
         html = html.replace("{{NAV}}", render_nav(f"{name}.html"))
         html = html.replace("{{BANNER}}", BANNER_HTML)
-        html = html.replace("{{FOOTER}}", render_footer())
+        html = html.replace("{{FOOTER}}", render_footer(last_processed_year))
         html = html.replace("{{DATA_VERSION}}", DATA_VERSION)
         html = html.replace("{{GENERATED_AT}}", DATA_VERSION)
         assert "{{" not in html, f"Unsubstituted placeholder left in {name}.html"
@@ -852,9 +855,11 @@ def main():
     with open(os.path.join(data_dir, "coverage.json"), "w", encoding="utf-8") as f:
         json.dump(coverage, f, ensure_ascii=False)
 
+    last_processed_year = conn.execute("SELECT MAX(year) FROM documents").fetchone()[0]
+
     conn.close()
 
-    render_pages(data_dir)
+    render_pages(data_dir, last_processed_year)
     copy_assets()
 
     with open(os.path.join(OUT_DIR, ".nojekyll"), "w") as f:
