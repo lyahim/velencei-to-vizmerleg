@@ -6,6 +6,7 @@ Path-alphabetical index of `output/`, `pdfs/`, `scripts/`, `site/`, and `docs/`.
 |---|---|
 | `.github/workflows/pages.yml` | GitHub Actions workflow. Runs `scripts/generate_site.py` on push to `main` (DB/site-source paths) or manual dispatch, deploys `output/site/` to GitHub Pages via `upload-pages-artifact` + `deploy-pages`. Pages source: Actions, not a branch. |
 | `docs/climate-charts-plan.md` | Data-availability audit of `output/vizmerleg.db` + prioritised 12-chart plan for climate-change visualisation. Tiered chart specs, blocking data-quality items. Implemented by `scripts/generate_site.py` / `site/`. |
+| `docs/daily-obs-pre-2002.md` | Why `daily_obs` holds no row before 2002 (era A/B docs carry no daily table) + feasibility of digitizing the daily lake-level curve from the ÁBRÁK figures. Per-doc evidence, 200dpi scan resolution ceiling, validation options, schema blocker. Decision open, nothing built. |
 | `docs/file-index.md` | This file. Per-file detail for `output/`, `pdfs/`, `scripts/`, `site/`, and `docs/`. |
 | `docs/known-issues.md` | Curated registry of data-quality defects in `output/vizmerleg.db`. Per-defect scope, years, severity, affected chart ids, Hungarian display note. Read by `scripts/generate_site.py` for chart annotation. Consumer-facing counterpart to `EXTRACTION_GUIDE.md` §14. |
 | `docs/README.md` | `docs/` holds project documentation, not the published site. Site generates to `output/site/`. Pages deploys via GitHub Actions, not this folder. |

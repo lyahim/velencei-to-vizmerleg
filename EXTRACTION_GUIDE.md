@@ -792,6 +792,10 @@ sqlite3 output/vizmerleg.db "SELECT COUNT(*) FROM release_events WHERE source_do
 Era A tbl8: only has final values (no raw/adj split) → insert into final columns only.  
 Era B tbl9: geometric = skip. Era C/D/E tbl9: végleges vízmérleg = monthly_balance final cols.
 
+Era A/B "daily embedded: no" is permanent, not backlog → `daily_obs` empty 1986–2001, nothing to
+extract. Daily lake level exists only as plotted curve under ÁBRÁK (2001 p18 `5. ábra`, 1995 p19
+`6. ábra`) — figure, not table. Digitization feasibility + blockers: `docs/daily-obs-pre-2002.md`.
+
 Era E quirks (2025+):
 - Tables renumbered. Doc→canonical: 1→tbl1, 2→tbl7, 3→tbl3, 4→tbl6-calc, 5→tbl2, 6→tbl4,
   7→tbl5, 8→tbl8, 9→tbl9, 10–18→tbl10+, 19→expedition_flows source (was tbl20 in era D).
