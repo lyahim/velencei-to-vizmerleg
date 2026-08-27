@@ -93,16 +93,19 @@ def extract_daily_grid(pdf_path, page, table_index, min_plausible=None, valid_ra
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        print("usage: python3 scripts/docling_daily.py <pdf_path> <page> [table_index=1] [min_plausible] [valid_min valid_max]")
+    if len(sys.argv) < 4:
+        print("usage: python3 scripts/docling_daily.py <pdf_path> <page> <year> [table_index=1] [min_plausible] [valid_min valid_max]")
         sys.exit(1)
     pdf_path = sys.argv[1]
     page = int(sys.argv[2])
-    table_index = int(sys.argv[3]) if len(sys.argv) > 3 else 1
-    min_plausible = None if len(sys.argv) <= 4 or sys.argv[4].lower() == "none" else float(sys.argv[4])
+    year = int(sys.argv[3])
+    if not 1900 <= year <= 2100:
+        raise SystemExit(f"error: implausible year {year} -- arg order is <pdf> <page> <year> [table_index]")
+    table_index = int(sys.argv[4]) if len(sys.argv) > 4 else 1
+    min_plausible = None if len(sys.argv) <= 5 or sys.argv[5].lower() == "none" else float(sys.argv[5])
     valid_range = None
-    if len(sys.argv) > 6:
-        valid_range = (float(sys.argv[5]), float(sys.argv[6]))
+    if len(sys.argv) > 7:
+        valid_range = (float(sys.argv[6]), float(sys.argv[7]))
     grid = extract_daily_grid(pdf_path, page, table_index, min_plausible, valid_range)
     for mi, m in enumerate(MONTHS, start=1):
         vals = [v for v in grid[m].values() if v is not None]
@@ -112,4 +115,4 @@ if __name__ == "__main__":
     print()
     for mi, m in enumerate(MONTHS, start=1):
         for d in sorted(grid[m]):
-            print(f"2010-{mi:02d}-{d:02d} = {grid[m][d]}")
+            print(f"{year}-{mi:02d}-{d:02d} = {grid[m][d]}")
