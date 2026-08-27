@@ -687,7 +687,9 @@ def build_coverage(conn, tracker_rows):
                         priority_status = p
                         break
             count = int(db_counts.get(table, {}).get(year, 0) or 0)
-            if priority_status in ("error", "verify"):
+            if priority_status == "error" and count > 0:
+                cell_status = "partial"
+            elif priority_status in ("error", "verify"):
                 cell_status = "unconfirmed"
             elif count > 0:
                 cell_status = "present"

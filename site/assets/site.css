@@ -38,6 +38,7 @@ body {
 }
 
 .badge.coverage-present { background: #198754; }
+.badge.coverage-partial { background: #20c997; color: #212529; }
 .badge.coverage-pending { background: #6c757d; }
 .badge.coverage-skip { background: #adb5bd; color: #212529; }
 .badge.coverage-unconfirmed { background: #ffc107; color: #212529; }
@@ -56,6 +57,7 @@ body {
 }
 
 .cov-cell.coverage-present { background: #198754; }
+.cov-cell.coverage-partial { background: #20c997; }
 .cov-cell.coverage-pending { background: #6c757d; }
 .cov-cell.coverage-skip { background: #adb5bd; }
 .cov-cell.coverage-unconfirmed { background: #ffc107; }
