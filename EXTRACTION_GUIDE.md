@@ -423,7 +423,7 @@ VALUES
 Era A (1986-1995): Table 8 was expected to contain ONLY final values (no raw/adj split)  
 → Insert into FINAL columns (csapadek, hozzafolyas, etc.), leave raw/adj as NULL.
 
-⚠️ **This does NOT hold for 1995 — check the actual rows before choosing columns.** 1995's table 8 (titled "A Velencei-tó **éves** vízmérlege") prints the full raw/adj pairing — `Cj`, `Hj`, `Pj`, `VKj`, `Lj`, `DKm javított`, `DKsz javított` — and was mapped to raw/adj like era B, final columns left NULL. Look for any `…j` / `…javított` row label: if one exists, it is a raw/adj table whatever the era says. Re-check this when 1994 and earlier are processed; the era-A claim above is unverified for those years.
+⚠️ **This does NOT hold for 1995 — check the actual rows before choosing columns.** 1995's table 8 (titled "A Velencei-tó **éves** vízmérlege") prints the full raw/adj pairing — `Cj`, `Hj`, `Pj`, `VKj`, `Lj`, `DKm javított`, `DKsz javított` — and was mapped to raw/adj like era B, final columns left NULL. Look for any `…j` / `…javított` row label: if one exists, it is a raw/adj table whatever the era says. **Confirmed down to 1990** (1991, 1990 both print 23-row raw/adj layouts; 1990 titled "havi vízmérlegei", 1991 "éves vízmérlege" — title wording varies, row labels decide). Era-A specifics: dash on a `j`-row = carry the raw value (Hj/Pj/VKj Év sums verify only with carries); dash on a raw row = 0; no Vp row + Bevétel label without Vp ⇒ vizpotlas=0; no adj-Záróhiba row ⇒ zarohibia_adj NULL.
 
 Era B/C/D (1996+): Table 8 has two halves: nyers (raw) and javított (adj).  
 → Insert both into raw and adj columns.
