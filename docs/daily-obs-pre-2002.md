@@ -2,6 +2,12 @@
 
 Session finding, 2026-08-27. No extraction performed. No DB write. Decision open.
 
+**Correction 2026-08-26:** premise below ("source PDFs 1986–2001 contain no daily table") is
+WRONG for 1989. `1989.pdf` p13–p20 = printed daily appendix ("Vízállás, vízhozam és
+vízhőmérséklet évi összesítő táblázatok", computer printouts, 7:00 obs). User decision:
+extract → `daily_obs` (era-C station_ids). Tracker: 1989 `daily_p13`–`daily_p20` rows.
+Chart-digitization question below stays open for all other era A/B years.
+
 ## Finding
 
 `daily_obs` holds no row before 2002. Not extraction backlog. Source PDFs 1986–2001 contain no daily table.
@@ -12,7 +18,7 @@ Earliest `daily_obs` year = 2002. Confirmed by `SELECT year, COUNT(*) FROM daily
 
 | era | years | tables | daily grid |
 |---|---|---|---|
-| A | 1986–1995 | tbl1–8 | absent |
+| A | 1986–1995 | tbl1–8 | absent (**exception: 1989 appendix daily sheets**) |
 | B | 1996–2001 | tbl1–8 (+historical tbl10–16, early years only) | absent |
 | C | 2002–2010 | tbl1–9 + tbl10+ | present, first appearance |
 | D/E | 2007– | same as C | present |

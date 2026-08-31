@@ -563,10 +563,14 @@ VALUES (1931, 1, NULL, 'vizallas_cm', 160, 1996, 27);
 
 source_doc_year = year of the PDF document containing this historical table (NOT the data year).
 
-**Era C/D (2002+): Daily data → `daily_obs`**
+**Era C/D (2002+) + 1989 appendix: Daily data → `daily_obs`**
 
 Check first: `SELECT COUNT(*) FROM daily_obs WHERE source_doc_id=<doc_id>;`  
 If > 0 → skip all daily tables for this doc.
+
+1989 exception: daily data lives in the appendix station sheets (p13–p20), not numbered
+tables — same station mapping, `source_doc_id=20`, values are computer-printout daily grids
+(7:00 obs). See `import_tracker.md` 1989 section, `docs/daily-obs-pre-2002.md`.
 
 | PDF table | station_id |
 |-----------|-----------|
@@ -783,18 +787,23 @@ sqlite3 output/vizmerleg.db "SELECT COUNT(*) FROM release_events WHERE source_do
 
 | era | years | tbl count | daily embedded | historical series |
 |-----|-------|-----------|---------------|------------------|
-| A | 1986–1995 | 8 (exception: 1991 has 12 — adds tbl9–12 tározó mérlegek/párolgás szimuláció) | no | no |
+| A | 1986–1995 | 8 (exception: 1991 has 12 — adds tbl9–12 tározó mérlegek/párolgás szimuláció) | no — **exception: 1989 appendix daily sheets** | no |
 | B | 1996–2001 | ~16 | no | yes (tbl10-16) |
 | C | 2002–2010 | ~19 | yes (tbl10+) | no |
 | D | 2007–2024 digital | ~19 | yes (tbl10+) | no |
 | E | 2025– | 19 | yes (tbl10–18) | no |
 
-Era A tbl8: only has final values (no raw/adj split) → insert into final columns only.  
+Era A tbl8: only has final values (no raw/adj split) → insert into final columns only.
+Exception: 1989, 1990 print era-B-style 23-row raw/adj tbl8 (see §15).
 Era B tbl9: geometric = skip. Era C/D/E tbl9: végleges vízmérleg = monthly_balance final cols.
 
-Era A/B "daily embedded: no" is permanent, not backlog → `daily_obs` empty 1986–2001, nothing to
-extract. Daily lake level exists only as plotted curve under ÁBRÁK (2001 p18 `5. ábra`, 1995 p19
-`6. ábra`) — figure, not table. Digitization feasibility + blockers: `docs/daily-obs-pre-2002.md`.
+Era A/B "daily embedded: no" — true for every doc checked except **1989** (found 2026-08-26:
+"Vízállás, vízhozam és vízhőmérséklet évi összesítő táblázatok" appendix, p13–p20, 8 station
+sheets, computer printouts, 7:00 obs; user decision: extract → `daily_obs` with era-C
+station_ids; 1990's MELLÉKLETEK heading was empty). Check each doc's ToC/appendix before
+assuming absence — era-A docs vary. For remaining era A/B docs daily lake level otherwise
+exists only as plotted curve under ÁBRÁK (2001 p18 `5. ábra`, 1995 p19 `6. ábra`) — figure,
+not table. Digitization feasibility + blockers: `docs/daily-obs-pre-2002.md`.
 
 Era E quirks (2025+):
 - Tables renumbered. Doc→canonical: 1→tbl1, 2→tbl7, 3→tbl3, 4→tbl6-calc, 5→tbl2, 6→tbl4,

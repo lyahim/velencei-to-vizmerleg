@@ -58,6 +58,7 @@ def main():
     b64 = base64.b64encode(png.read_bytes()).decode()
     body = json.dumps({
         "model": MODEL,
+        "thinking": {"type": "disabled"},
         "messages": [{"role": "user", "content": [
             {"type": "text", "text": prompt},
             {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{b64}"}},
