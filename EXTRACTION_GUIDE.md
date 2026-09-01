@@ -996,7 +996,11 @@ Entry format: table id, confirmed year(s)/era, row labels in printed order, colu
 
 ### tbl1 — Hóeleji vízállás + vízeresztések (→ release_events)
 
-**Confirmed: 2010 (era C scanned), 2013–2024 (era D digital)**
+**Confirmed: 2010 (era C scanned), 2013–2024 (era D digital), 1988–1995 (era A)**
+
+- **Era-A years can print 2 tables per landscape page** (1988: tbl1 top + tbl2 bottom on p8, like 1989; 1990 = 1/page) — check the page map from the toc step, don't assume.
+- **Era-A volume units vary: 1988 prints E.m³ = EZER m³ (thousand)** (title "(E.M3)"; ÷1000 → release_volume_1e6m3; tbl6 II.a "millió m³" row confirms: 50,4 E.m³ = 0,05 M m³), while 1989/1990 print raw m³ and 1995-era uses m³ too — always check the title unit per document.
+- 1988 Pátka Júl: level ROSE during a 13-31 release (457→493) with a single-month volume (2 110 700 m³) larger than typical annual — printed identically in tbl1 AND tbl6 II.a, so a genuine source figure; stored as printed, anomaly noted in tracker (likely Zámolyi→Pátka transfer passing through).
 
 ⚠️ **Layout varies**: 2013 and earlier era-D years (and the 2010 era-C scan) use a clean horizontal table (rows=metrics, columns=months, not rotated) — much easier to read directly. 2016–2024 use a rotated/portrait layout (see below). Same fields either way.
 
@@ -1022,7 +1026,10 @@ Entry format: table id, confirmed year(s)/era, row labels in printed order, colu
 
 ### tbl2 — Vízgyűjtő havi csapadékösszegei (→ monthly_station_obs, csapadek_mm)
 
-**Confirmed: 2011 (9 stations), 2014 (8 stations), 2015 (7 stations), 2016–2020 (6 stations), 2024 (5 stations) — era D**
+**Confirmed: 1988 (era A, 5 stations), 2011 (9 stations), 2014 (8 stations), 2015 (7 stations), 2016–2020 (6 stations), 2024 (5 stations) — era D**
+
+- **Era-A roster is NOT fixed: 1988 prints only 5 stations** (Agárd, Velence, Sukoró, Pákozd, Dinnyés) vs 1989–1992's 11 (incl Sukoró D. ház). Zámoly precipitation is NOT in tbl2 those years — it lives in tbl4's Zámoly műszertérkert block (zamoly_meteo). Read the actual station column per document.
+- 1988 summary row = single ÁTLAG (5-station mean) which the narrative cites as "tóra hulló csapadék" (433 mm) — but the balance C raw (tbl9) = this Átlag rounded (434) and C jav = 431; three closely-related figures, only the tbl8/tbl9 ones go into monthly_balance.
 
 - One row per precipitation station; station SET varies by year — always read the actual station column, don't assume a fixed count. Confirmed changes: **Nadap** (`nadap_csapadek` — had to be added to the `stations` table, wasn't in the registry at all) active in 2011, OMSZ discontinued its daily readings from 2011-10-01 (that document's own footnote says so; Oct–Dec of that year are themselves estimates averaged from Velencefürdő/Pázmánd/Lovasberény, insert as printed anyway — not a Rule D case since the doc gives real numbers, just flags them as estimated); **Gánt** (`gant_csapadek`) active in 2014, unreliable/excluded by 2015 text, decommissioned by 2016; **Velencefürdő** (`velencefurdo_csapadek`) active through 2015, decommissioned before the 2016 report. So: 2011 → 9 stations (adds Nadap), 2014 → 8 (adds Gánt+Velencefürdő, no Nadap), 2015 → 7 (no Gánt), ≥2016 → 6 (no Gánt, no Velencefürdő).
 - If a station name in the table isn't in the `stations` table at all (unlike Gánt/Velencefürdő which already existed there unused) — this has no `station_name` text fallback the way `expedition_flows` does. Add a new row to `stations` (id/name/type='csapadek'/unit='mm') rather than dropping the data or forcing `station_id=NULL` (NULL is reserved for the Agárd meteo/lake-level variables, not for named-but-unregistered precip stations).
@@ -1031,7 +1038,10 @@ Entry format: table id, confirmed year(s)/era, row labels in printed order, colu
 
 ### tbl3 — Havi középvízhozamok (→ monthly_station_obs, kozepes_m3s)
 
-**Confirmed: 2020, 2021 (6 stations, identical set) — era D**
+**Confirmed: 1988 (era A, 4 gauges), 2020, 2021 (6 stations, identical set) — era D**
+
+- **Era-A gauge roster varies year to year**: 1988 = 4 gauge rows (Császárvíz-Kőrakás, Császárvíz-Csákvár, Rovákja-Pátka, Vereb-Kápolnásnyék; plain data rows, no group headings — unlike 1989's 2 gauges under CSÁSZÁRVÍZ/VEREB-FAZMANDI headings, or 1990's 3). VÍZKIVÉTEL block (m³/s + tómm rows) present every year — never stored, but the tómm row sums to tbl8/tbl9 Vk raw (1988: 96 vs comparison 97 = jav).
+- Kőrakás spikes can be Pátka-release transit water (1988 Júl 1,04 / Aug 0,497 m³/s during Pátka 13-31 Júl + 1-12 Aug releases into Császár-víz above the gauge) — plausible, not a misread; tbl6's II−II.a formula exists precisely to remove it.
 
 - 6 flow stations, fixed set across at least 2020–2021: Kápolnásnyék (`kapolnasnyekvizhozam`), Kőrakáspuszta (`korakaspuszta_vizhozam`), Kisfalud (`kisfalud_vizhozam`), Csákvár (`csakvar_vizhozam`), Zámoly/Burján-víz (`zamoly_vizhozam`), Pátka/Rovákja-patak (`patka_vizhozam`)
 - Columns: Jan…Dec, `Átlag` (→ month=0 annual row, inserted — it's an average not a sum, but stored the same way)
@@ -1039,7 +1049,10 @@ Entry format: table id, confirmed year(s)/era, row labels in printed order, colu
 
 ### tbl4 — Meteorológiai jellemzők havi közepei (→ monthly_station_obs, station_id=NULL)
 
-**Confirmed: 2020, 2024 — era D**
+**Confirmed: 1988 (era A), 2020, 2024 — era D**
+
+- **Era-A Agárd block can lack the Napsütés row entirely** (1988: 4 rows léghő/páranyomás/szél/kád; 1989 had all 5) — row set varies, read it.
+- 1988 confirms the era-A kád unit = monthly totals (Ápr–Okt 77…177, Év = own sum), matching the 1991/1993 convention; the A(sum) cross-check against tbl5 settled a 177-vs-180 Júl digit dispute (Összeg cell 748 decisive).
 
 - 5 rows, fixed order: `Léghő (°C)`, `Páranyomás (hPa)`, `Szél (m/s)`, `"A" (1,14 m²) kád párolgása (mm)`, `Napsütéses órák száma (h)`
 - Columns: Jan…Dec, `Átlag`, `Összeg` — Átlag applies to Léghő/Páranyomás/Szél (temperature-like rows), Összeg applies to kád párolgás/Napsütés (accumulative rows); the non-applicable column is a dash for each row, not both filled
@@ -1094,7 +1107,9 @@ Entry format: table id, confirmed year(s)/era, row labels in printed order, colu
 
 ### tbl8 — A Velencei-tó vízmérlege, tómm (→ monthly_balance raw/adj cols)
 
-**Confirmed: 2020, 2019 (era D) — 23-row layout**
+**Confirmed: 1988 (era A, SINGLE-VALUE javított variant), 2020, 2019 (era D) — 23-row layout**
+
+⚠️ **1988 role-swap variant**: in that document tbl8 is a single-value JAVÍTOTT (final-style) table — 10 rows, no raw/j pairs, no Záróhiba row (Z lives in tbl9) — and the nyers raw/adj pairs live in tbl9 instead (see tbl9 entry). Era-C/D convention (tbl8=raw/adj, tbl9=final) is REVERSED in 1988. Rule: row labels decide, title wording varies (1988 titled "évi vízmérlege", printed outflows NEGATIVE — store magnitudes). Its ΔK row is ΔKszám-jav (=Bevétel−Kiadás, formula-locked), NOT mért; the mért series comes from tbl9's DKm column. Narrative phrase "a megváltoztatott elemek 'j' indexszel szerepeltek a 8.táblázatban" refers to this jav-only table.
 
 Full row order, top to bottom, each pair is raw-value-row immediately followed by its "j" (javított/adjusted) subscript row.
 
@@ -1142,7 +1157,9 @@ Other notes:
 
 ### tbl9 — A Velencei-tó végleges vízmérlege (→ monthly_balance final cols)
 
-**Confirmed: 2020, 2024 — era D/C (2002+)**
+**Confirmed: 1988 (era A, TRANSPOSED nyers raw/adj variant), 2020, 2024 — era D/C (2002+)**
+
+⚠️ **1988 structure**: titled "A Velencei-tó 1988. évi NYERS vízmérlege /tómm/", printed **transposed** (months I.–XII. as rows × elements as columns) and carrying the raw + jav pairs (C/Cj, H/Hj, Ht/Htj, Bevétel/jav, P/Pj, Vk/Vkj, L/Lj, Kiadás/jav, DKm/DKmj, DKsz/DKszj, Záróhiba, DKt) — i.e. era-B-style tbl8 content in the tbl9 slot, transposed. Mapping: tbl9 → raw/adj cols, tbl8 → final cols. Dense transposed scans suffer heavy column-bleed on monthly reads; reliable extraction path = lock the Összesen row against external sources (tbl5 P, tbl6 VI/II.a, tbl3 tómm, tbl2-Átlag C, tbl1 L), take raw monthlies from those source tables, and use the printed identity Z = DKsz_raw − DKm per month to lock the DKm/Z series. 1988 Aug: monthly DKsz raw sum −131 vs printed Év −129 (2 tómm source inconsistency, stored as-is); monthly Z sum ≠ Év Z (65 vs 31) → Rule D NULL on ambiguous months, annual + narrative-locked extremes kept.
 
 - 9 rows, fixed order, clean single-value table (no raw/adj split): `Csapadék`, `Hozzáfolyás`, `Hozzáfolyás tározóból`, `Vízpótlás`, `Párolgás`, `Vízkivétel`, `Lefolyás`, `Mért vízkészletváltozás`, `Természetes készletváltozás*` (footnote: *a tározóból történt vízeresztés nélkül* — natural change excluding reservoir releases)
 - Columns: Jan…Dec, `Évi összes` (→ month=0 annual row, inserted)
