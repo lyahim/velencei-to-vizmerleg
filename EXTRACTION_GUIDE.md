@@ -926,6 +926,36 @@ not guessed. Check for a corrected/reissued PDF before assuming this gap is perm
 year's document shows the same header/timestamp mismatch pattern, treat it the same way (Rule C
 stop, don't insert as the current year).
 
+**RESOLVED 2026-09-09** (user decision): both 2025 series inserted from OVF VRA open data
+(data.vizugy.hu) under VRA source doc_id=43 — see next §14 entry. Vendor PDF pages still stale;
+reissued yearbook pages, if ever obtained, stay authoritative (see overwrite rule below).
+
+### daily_obs — VRA (data.vizugy.hu) API as secondary source for daily-flow gaps (added 2026-09-09)
+
+Two yearbook gaps had no recoverable PDF source (2002 tbl20/tbl21 physically absent from the only
+existing scan — kdtvizig.hu's own copy is byte-identical; 2025 doc tbl16/17 = stale vendor 2024
+pages). USER DECISION 2026-09-09: fill both from OVF's free VRA open-data API (guest access, no
+registration). Connection manual: `docs/vra-api.md`.
+
+- **What was inserted**: `zamoly_vizhozam` (VRA Tsz 142026 "Zámoly") + `patka_vizhozam`
+  (Tsz 142421 "Pátka"), years 2002 (doc_id=42) and 2025 (doc_id=43). 1458 rows total.
+  Rows carry `source_doc_id` 42/43; documents rows have `filename LIKE 'VRA%'`.
+- **Value semantics differ from yearbook rows**: VRA = daily MEAN of the hourly record; yearbook
+  dailies = 7:00 observation / `számított (feldolgozottból)`. Series identical outside rapid
+  hydrograph rises (2024 comparison: patka 91/91 days within ±0.02 m³/s; zamoly 89/91, both
+  outliers on one flood-rise day). VRA values stored FULL PRECISION as returned — the un-rounded
+  decimals are the visual cue that a row is VRA-sourced, yearbook prints are 3-dec.
+- **Gauge identity validated for both years**: 2002 monthly means vs yearbook tbl3
+  (havi középvízhozam): 24/24 months \|diff\| ≤ 0.0005 m³/s.
+- **Genuine holes preserved**: 2025 patka missing May 12 + May 25 (absent in VRA too) — left
+  missing per Rule D, not interpolated.
+- **Overwrite rule**: if corrected yearbook pages ever surface (2002 archive copy, 2025 reissue),
+  yearbook values are authoritative. Yearbook rows already in DB always win over VRA — insert
+  order used `INSERT OR IGNORE` and VRA fills only years where `daily_obs` had zero rows for the
+  station.
+- Tározó gauges (Tsz 142029/142080) have NO discharge series in VRA (empty even 2024) — VRA cannot
+  substitute for any `*_tarozo` vízhozam table.
+
 ### daily_obs — korakaspuszta_vizhozam flat runs 2004–2006 resolved as genuine (verify pass 2026-09-06)
 
 Flat runs (2006 Dec 0.052×31; 2005 Dec 10–27 0.048×18; 2004 Jan/Aug/Sze/Nov/Dec 0.026/0.032 stretches) checked against each page's own printed stats block via positioned OCR (months-as-rows × days-as-columns layout, x-anchored cell mapping):
