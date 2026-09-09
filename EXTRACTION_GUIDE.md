@@ -926,6 +926,16 @@ not guessed. Check for a corrected/reissued PDF before assuming this gap is perm
 year's document shows the same header/timestamp mismatch pattern, treat it the same way (Rule C
 stop, don't insert as the current year).
 
+### daily_obs — korakaspuszta_vizhozam flat runs 2004–2006 resolved as genuine (verify pass 2026-09-06)
+
+Flat runs (2006 Dec 0.052×31; 2005 Dec 10–27 0.048×18; 2004 Jan/Aug/Sze/Nov/Dec 0.026/0.032 stretches) checked against each page's own printed stats block via positioned OCR (months-as-rows × days-as-columns layout, x-anchored cell mapping):
+
+- Printed **Átlag matches DB grid average exactly** every checked month (2004 Jan/Aug/Dec, 2005 Dec, 2006 Nov/Dec). Placeholder/fabricated data would not reproduce printed means.
+- Off-grid printed Min/Max cells (2006 Dec Min 0.042 @12:45; 2005 Dec Max 0.130 @21:45; 2004 Dec Min 0.026 @7:30) = instantaneous recorder extremes — timestamps outside 7:00±60 obs window (§15 caveat). Grid = 7:00 snapshots; stats = continuous recorder. Source-internal, not transcription error.
+- Quantized values (0.026/0.032/0.042/0.048/0.052) = rating-curve steps of small stream. Winter baseflow plateau on one step for weeks = real.
+
+Data stands as printed. 2007 case remains different (fabricated grid values, §14 above). Method reusable: positioned OCR textItems x-coordinates vs month-column anchors beats whole-row vision reads on these scans.
+
 ### historical_monthly — vizhaztartas_* tbl16 column shift, three variables misnamed (found 2026-08-25, fixed 2026-08-25)
 
 `historical_monthly`'s `vizhaztartas_*` family (1971–1996, from tbl16 of `Velencei-tó vízmérleg,
