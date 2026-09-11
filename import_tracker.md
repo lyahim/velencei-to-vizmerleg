@@ -866,6 +866,17 @@ Tables 1–9 have no text layer (images) → render page + read per `EXTRACTION_
 
 ---
 
+## VRA földalatti (nem évkönyv-forrás) — talajvíz-kútmegfigyelések
+
+Source: OVF VRA API (data.vizugy.hu), vmoType 12 talajvízhálózat, adatFajtaKod 69. Not tied to any yearbook PDF. See `docs/vra-api.md`, `EXTRACTION_GUIDE.md` §14/§15.
+
+| step | description | db_table | status | rows_in_db | notes |
+|------|-------------|----------|--------|------------|-------|
+| schema | táblák létrehozása + kútregiszter (7 kút) | groundwater_wells + groundwater_obs | done | 7 | 2026-09-11; CREATE TABLE + regiszter a Vra/InternetVmo/12 válaszából (tsz, name, telepules, lat, lon, uzem) |
+| ingest | első betöltés, mindkét értékmód | groundwater_obs | done | 224512 | 2026-09-11; `scripts/fetch_groundwater.py` → doc_id=44 (`VRA földalatti 2026-09-11`); 112 256 pont/mód, 1990-01-01 → 2026-08-27; idempotens (második alkalmazás nem változtat semmit). Elérhetőségi riport kútonként (pont/mód, első–utolsó, Balti-sáv m.a.f.): Pákozd 825: 16 493, 1993-01→2026-03, 109.30–110.71; Agárd 826: 20 553, 1990-01→2026-08, 104.51–108.51; Agárd-2.új házak 143969: 3 156, 1998-01→2026-02, 103.10–105.74; AGÁRD-3.szennyvíztelep 143970: 12 572, 1998-01→2026-04, 104.12–107.83; Velence 667: 18 415, 1990-01→2026-05, 131.71–133.57; Kápolnásnyék 582: 34 680, 1990-01→2026-08, 117.85–122.73; Börgönd 587: 6 387, 1990-01→2025-03, 110.05–115.58. Mind a 7 kútra él mindkét mód (relativ cm + balti m.a.f.). Megfigyelésszűrűség 2018-ban ugrás (kézi heti → automata napi többször) — megjelenítés csak havi átlaggal. Rétegvíz-hálózat (vmoType 13, kód 70) NEM töltve — elhalasztva. |
+
+---
+
 ## Progress summary
 
 | era | docs | total steps | done | verify | skip | pending |

@@ -1026,6 +1026,34 @@ Years 2011, 2012 (partial), 2013, 2019, 2022 still have `kozepes_m3s` rows with 
 | `historical_monthly` | Added `idx_hm_unique` expression index on (year, month, COALESCE(station_id,''), variable, source_doc_year) |
 | `monthly_station_obs` | Deferred — blocked by NULL kozepes_m3s rows (see above) |
 
+### groundwater_obs — VRA földalatti (talajvíz) ingest, own source family (added 2026-09-11)
+
+Not a yearbook table — the yearbooks carry no földalatti víz data. Source: OVF VRA API
+(data.vizugy.hu), talajvíz network (vmoType 12), adatFajtaKod 69 Talajvízállás.
+Connection manual: `docs/vra-api.md`. Fetch script: `scripts/fetch_groundwater.py`
+(emits SQL, operator applies; NEVER writes the DB itself).
+
+- **What was inserted**: 7 registry wells (Pákozd 825, Agárd 826, Agárd-2.új házak 143969,
+  AGÁRD-3.szennyvíztelep 143970, Velence 667, Kápolnásnyék 582, Börgönd 587), window
+  1990-01-01 → fetch day, 224 512 rows (112 256 per mode), doc_id=44
+  (`filename='VRA földalatti 2026-09-11'`). One documents row PER FETCH RUN.
+- **Two value modes stored, never converted**: `relativ` = depth below surface (cm, as VRA
+  returns), `balti` = water-table elevation above Baltic sea level (m.a.f.). Per-well
+  `relativ` reference point (kútfej vs ground) unverified — cross-well depth comparison
+  only in `balti` mode.
+- **Raw storage, no derivation**: values stored full precision as returned (no rounding,
+  no unit conversion); timestamps stored as the exact UTC instant from VRA
+  (`ts_utc TEXT`, e.g. `2020-05-12T22:00:00Z`); local-day/month interpretation happens
+  only at export (`Europe/Budapest`, CEST `22:00Z` / CET `23:00Z` boundary — see
+  `docs/vra-api.md`). Points without `Adat` skipped; gaps stay gaps (Rule D analog).
+- **Observation density changes 2018** (manual weekly → automated multi-daily, Pákozd
+  52/yr 1993 → 100+/yr 1996+ → 800–2200/yr 2018+): any display aggregation MUST use
+  monthly means, not raw density.
+- **VRA license**: data usable freely with source credit (OVF / competent VÍZIG); last
+  ~1 year typically unprocessed → "tájékoztató jellegű" — display note required.
+- **Idempotent refresh**: UNIQUE(ts_utc, well_tsz, mode) + INSERT OR IGNORE; re-fetch
+  extends only. Registry fixed — script exits on unexpected törzsszám.
+
 ---
 
 ## 15. Table Structure Registry (Row/Column Metadata)
@@ -1281,3 +1309,13 @@ columns) plus a trailing `1971-1996` summary column (not a data year — skip).
 - Grid: same Nap × 12-month layout as the vízállás tables, but most cells are unflagged (bare number, no letter) with `P` and `J` appearing on a meaningful minority of days (not rare one-offs — `J` recurs across whole months, e.g. most of Máj/Okt/Nov/Dec). Stripped unconditionally same as any other flag.
 - **Cross-check caveat for this table type**: flow/discharge is far noisier intraday than water level or temperature. Several months' printed Minimum/Maximum have Óra:Perc well outside the 7:00±60min window (14:30, 19:00, 22:00 etc.), and the value gap from the day-of grid reading can be a real double-digit percentage (not just ~1 unit) — still the same "instantaneous continuous-monitoring extreme vs. daily 7am snapshot" explanation from §4b, just proportionally larger for this noisier measurement type. Don't treat a large gap as a transcription error on this table family without first checking whether the printed Óra:Perc is inside or outside the window.
 - Also saw a **one-day offset between the printed per-column Minimum/Nap and the grid**: Okt's printed Minimum (0.002, Nap 19, 7:45 — nominally inside window) actually matches the grid value at day 20, not day 19 (grid day 19 = 0.003). Value itself is unambiguous either way; treat this as a benign day-attribution quirk in the source's own summary block, insert the grid's own day/value pairs as printed, don't "correct" the grid to match the stats block's day label.
+
+### groundwater_obs / groundwater_wells — VRA földalatti kútmegfigyelések (NOT a yearbook table; source = OVF VRA API)
+
+**Confirmed: full ingest 2026-09-11 (doc_id=44), no PDF counterpart exists**
+
+- **Source shape**: JSON from `TS/TsShortList` (see `docs/vra-api.md`), NOT a yearbook grid. No page/era mapping applies; Rule F diff not applicable. Registry wells fixed (7, tsz list in §14 entry) — new wells = Rule C decision, not silent addition.
+- **`groundwater_wells`**: one row per well — `tsz` PK, `name` (Hungarian, VRA-published form, e.g. `Agárd-2.új házak`), `telepules`, `lat`/`lon`, `uzem` (1/0). Populated from `Vra/InternetVmo/12/false` response.
+- **`groundwater_obs`**: one row per observation point per mode — `ts_utc` (exact UTC instant as returned, ISO-8601 `...Z`), `well_tsz` FK, `mode` (`relativ` cm below surface / `balti` m.a.f.), `value` REAL full precision, `source_doc_id` FK → per-fetch-run `documents` row. UNIQUE(ts_utc, well_tsz, mode); INSERT OR IGNORE.
+- **Density is irregular** (weekly→multi-daily, telemetry ~2018): no day-grid assumptions. Any calendar aggregation converts to `Europe/Budapest` local time first, then buckets; monthly means only for display.
+- **No NULL padding rows** — unlike `daily_obs`, absent observation = absent row. Gaps are real gaps.

@@ -555,6 +555,108 @@ def chart_12(conn):
     }
 
 
+def _gw_monthly_series(conn, mode, tsz_list):
+    """{(year, month): mean} per well from groundwater_obs, Europe/Budapest local month.
+    UTC instants convert to local time before bucketing (CEST 22:00Z / CET 23:00Z day boundary).
+    Missing well/months are simply absent keys (gaps stay gaps)."""
+    df = pd.read_sql_query(
+        "SELECT well_tsz, ts_utc, value FROM groundwater_obs WHERE mode = ?",
+        conn, params=(mode,),
+    )
+    df["local"] = pd.to_datetime(df["ts_utc"], utc=True).dt.tz_convert("Europe/Budapest")
+    df["year"] = df["local"].dt.year
+    df["month"] = df["local"].dt.month
+    out = {}
+    for tsz in tsz_list:
+        sub = df[df["well_tsz"] == tsz].groupby(["year", "month"])["value"].mean()
+        out[tsz] = {(int(y), int(m)): clean(float(v)) for (y, m), v in sub.items()}
+    return out
+
+
+def _month_labels(series_dicts):
+    """Sorted union 'YYYY-MM' labels + per-series aligned data lists (None = gap)."""
+    keys = sorted(set().union(*[set(d) for d in series_dicts]))
+    labels = [f"{y:04d}-{m:02d}" for y, m in keys]
+    aligned = [[d.get(k) for k in keys] for d in series_dicts]
+    return labels, aligned
+
+
+def chart_13(conn):
+    """Chart A — lake level vs talajvíz, common Baltic datum (m.a.f.), monthly means."""
+    wells = [(825, "Pákozd"), (826, "Agárd"), (582, "Kápolnásnyék")]
+    gw = _gw_monthly_series(conn, "balti", [t for t, _ in wells])
+
+    lake = pd.read_sql_query(
+        """SELECT year, month, value FROM monthly_station_obs
+           WHERE variable='atlag_cm' AND station_id IS NULL AND month BETWEEN 1 AND 12
+             AND value IS NOT NULL""",
+        conn,
+    )
+    datum = pd.read_sql_query(
+        """SELECT year, nullpont_mBf FROM station_metadata_history
+           WHERE station_id='agard_vizallas' AND nullpont_mBf IS NOT NULL""",
+        conn,
+    )
+    datum_map = dict(zip(datum["year"], datum["nullpont_mBf"]))
+
+    def to_maf(year, cm):
+        return clean(float(cm) / 100.0 + datum_map.get(int(year), 102.62))
+
+    lake_series = {
+        (int(r.year), int(r.month)): to_maf(r.year, r.value)
+        for r in lake.itertuples()
+    }
+    # atlag_cm carries holes (e.g. 2021-2023 yearbook rows absent). Same-gauge fallback:
+    # monthly mean of daily_obs agard_vizallas (yearbook monthly mean = mean of the dailies).
+    daily = _daily_obs_valid(conn, "agard_vizallas")
+    for (yr, mo), v in daily.groupby(["year", "month"])["value"].mean().items():
+        lake_series.setdefault((int(yr), int(mo)), to_maf(yr, v))
+
+    series_dicts = [lake_series] + [gw[t] for t, _ in wells]
+    labels, aligned = _month_labels(series_dicts)
+    datasets = [{"label": "Velencei-tó vízszintje (Agárd)", "data": aligned[0], "highlight": True}]
+    for (tsz, name), data in zip(wells, aligned[1:]):
+        datasets.append({"label": f"Talajvízszint — {name}", "data": data, "point_radius": 0})
+
+    return {
+        "source": "groundwater_obs balti mód (VRA földalatti, havi átlag) + monthly_station_obs atlag_cm (Agárd nullpont_mBf-szal m.a.f.-ba váltva; hiányzó hónapokra daily_obs agard_vizallas havi átlaga)",
+        "panels": [{
+            "key": "main",
+            "type": "line",
+            "title": "A tó és a talajvize együtt lélegzik — Balti tszint feletti magasság, havi átlagok",
+            "y_label": "m.a.f. (Balti)",
+            "labels": labels,
+            "datasets": datasets,
+            "year_ranges": [{"from": 2019, "to": 2022, "label": "Aszálysorozat 2019-2022"}],
+        }],
+    }
+
+
+def chart_14(conn):
+    """Chart B — talajvízmélység a felszín alatt (relativ, cm), one small-multiple panel per well."""
+    wells = pd.read_sql_query(
+        "SELECT tsz, name FROM groundwater_wells ORDER BY tsz", conn
+    )
+    gw = _gw_monthly_series(conn, "relativ", wells["tsz"].tolist())
+    panels = []
+    for r in wells.itertuples():
+        series = gw[int(r.tsz)]
+        labels, (data,) = _month_labels([series])
+        panels.append({
+            "key": str(r.tsz),
+            "type": "line",
+            "title": r.name,
+            "y_label": "cm (felszín alatt)",
+            "labels": labels,
+            "datasets": [{"label": "Talajvízmélység", "data": data, "point_radius": 0, "fill": True}],
+            "reverse_y": True,
+        })
+    return {
+        "source": "groundwater_obs relativ mód (VRA földalatti), havi átlagok — a kútak adatai nem közvetlenül hasonlíthatók egymáshoz (eltérő referenciapont)",
+        "panels": panels,
+    }
+
+
 CHART_FUNCS = {
     "vizhaztartas": chart_1,
     "parolgas_csapadek": chart_2,
@@ -568,6 +670,8 @@ CHART_FUNCS = {
     "tarozoi_fuggoseg": chart_10,
     "parolgas_hajtoero": chart_11,
     "kumulalt_hiany": chart_12,
+    "talajviz_to": chart_13,
+    "talajviz_melyseg": chart_14,
 }
 
 # known-issues.md's `charts` column carries docs/climate-charts-plan.md's plain numbering (1-12),
@@ -577,6 +681,7 @@ CHART_PLAN_NUMBER = {
     "hozzafolyas_osszeomlas": "4", "havi_anomalia": "5", "melegedesi_csikok": "6",
     "homerseklet_jeg": "7", "nincs_tulfolyas": "8", "kiszaradas": "9",
     "tarozoi_fuggoseg": "10", "parolgas_hajtoero": "11", "kumulalt_hiany": "12",
+    "talajviz_to": "13", "talajviz_melyseg": "14",
 }
 
 
@@ -797,7 +902,7 @@ def render_footer(last_processed_year):
 </footer>"""
 
 
-def render_pages(data_dir, last_processed_year):
+def render_pages(data_dir, last_processed_year, gw_fetch_date):
     os.makedirs(OUT_DIR, exist_ok=True)
     for name in ["index", "klima", "adattar", "forras"]:
         src = os.path.join(TEMPLATE_DIR, f"{name}.html")
@@ -808,6 +913,7 @@ def render_pages(data_dir, last_processed_year):
         html = html.replace("{{FOOTER}}", render_footer(last_processed_year))
         html = html.replace("{{DATA_VERSION}}", DATA_VERSION)
         html = html.replace("{{GENERATED_AT}}", DATA_VERSION)
+        html = html.replace("{{GW_FETCH_DATE}}", gw_fetch_date)
         assert "{{" not in html, f"Unsubstituted placeholder left in {name}.html"
         assert_relative_paths(html, name)
         with open(os.path.join(OUT_DIR, f"{name}.html"), "w", encoding="utf-8") as f:
@@ -858,10 +964,14 @@ def main():
         json.dump(coverage, f, ensure_ascii=False)
 
     last_processed_year = conn.execute("SELECT MAX(year) FROM documents").fetchone()[0]
+    gw_row = conn.execute(
+        "SELECT processed_at FROM documents WHERE filename LIKE 'VRA földalatti%' ORDER BY id DESC LIMIT 1"
+    ).fetchone()
+    gw_fetch_date = gw_row[0][:10] if gw_row else "—"
 
     conn.close()
 
-    render_pages(data_dir, last_processed_year)
+    render_pages(data_dir, last_processed_year, gw_fetch_date)
     copy_assets()
 
     with open(os.path.join(OUT_DIR, ".nojekyll"), "w") as f:

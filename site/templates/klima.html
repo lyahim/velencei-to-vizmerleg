@@ -21,6 +21,7 @@
         <a class="list-group-item list-group-item-action ps-4" href="#chart-5">5. Havi anomáliák</a>
         <a class="list-group-item list-group-item-action ps-4" href="#chart-6">6. Melegedési csíkok</a>
         <a class="list-group-item list-group-item-action ps-4" href="#chart-7">7. Hőmérséklet és jég</a>
+        <a class="list-group-item list-group-item-action ps-4" href="#chart-13">13. A tó és a talajvize</a>
         <a class="list-group-item list-group-item-action" href="#tier3">Tier 3 — hatás és alkalmazkodás</a>
         <a class="list-group-item list-group-item-action ps-4" href="#chart-8">8. Nincs túlfolyás</a>
         <a class="list-group-item list-group-item-action ps-4" href="#chart-9">9. Kiszáradó mellékvizek</a>
@@ -47,6 +48,7 @@
           <a class="list-group-item list-group-item-action" href="#chart-5">5. Havi anomáliák</a>
           <a class="list-group-item list-group-item-action" href="#chart-6">6. Melegedési csíkok</a>
           <a class="list-group-item list-group-item-action" href="#chart-7">7. Hőmérséklet és jég</a>
+          <a class="list-group-item list-group-item-action" href="#chart-13">13. A tó és a talajvize</a>
           <a class="list-group-item list-group-item-action" href="#chart-8">8. Nincs túlfolyás</a>
           <a class="list-group-item list-group-item-action" href="#chart-9">9. Kiszáradó mellékvizek</a>
           <a class="list-group-item list-group-item-action" href="#chart-10">10. Tározói függőség</a>
@@ -57,7 +59,7 @@
     </div>
 
     <main class="col-lg-9">
-      <h1 id="tier1">Klíma — mind a 12 ábra</h1>
+      <h1 id="tier1">Klíma — minden ábra</h1>
 
       <section id="chart-1" class="chart-section mb-5">
         <h2>1. Éves vízháztartás</h2>
@@ -129,6 +131,19 @@
         </div>
         <div class="chart-panel" data-chart="homerseklet_jeg" data-panel="ice" data-controls="false">
           <canvas></canvas>
+        </div>
+      </section>
+
+      <section id="chart-13" class="chart-section mb-5">
+        <h2>13. A tó és a talajvize együtt lélegzik</h2>
+        <p>A tó vízszintje és a parti talajvízkutak vízszintmagassága közös Balti-rendszerű
+          tszint feletti magasságban (m.a.f.), havi átlagokban. A 2019-2022-es aszálysorozat
+          (piros árnyalt sáv) alatt a talajvíz ~1 métert süllyedt, és 2024-re is csak részben
+          regenerálódott — a felszín alatti készlet fogyása az összefolyás-veszteség közvetlen
+          oka (lásd a 4. ábrát).</p>
+        <div class="chart-panel" data-chart="talajviz_to" data-controls="true">
+          <canvas></canvas>
+          <p class="chart-note text-muted small"></p>
         </div>
       </section>
 

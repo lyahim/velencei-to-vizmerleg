@@ -5,8 +5,9 @@ How to connect to OVF Vízrajzi Adatbázis (VRA) open-data API. Verified working
 ## What it is
 
 - OVF (Országos Vízügyi Főigazgatóság) free data portal. Since 2024-07-15.
-- Daily/hourly series per network station: vízállás, vízhozam, vízhőmérséklet, csapadék, léghőmérséklet, talaj.
+- Daily/hourly series per network station: vízállás, vízhozam, vízhőmérséklet, csapadék, léghőmérséklet, talaj, talajvíz, rétegvíz.
 - No registration. No API key. Guest JWT per session.
+- License (download-tool welcome dialog): downloaded data usable freely and free of charge, without restriction, provided the source (OVF or the competent VÍZIG) is credited. Last ~1 year of series typically unprocessed — "tájékoztató jellegű"; for official proceedings request verified data via ovf.hu.
 - SPA at `https://data.vizugy.hu/` (Angular). SPA calls hidden REST API. This doc documents that API directly.
 
 ## Architecture
@@ -42,8 +43,17 @@ curl -sk -H "Authorization: Bearer $TOKEN" -H "Origin: https://data.vizugy.hu" \
 ```
 
 - Path: `Vra/InternetVmo/{vmoType}/false`.
-- vmoType values SPA loads: `1, 11, 12, 13, 14`. Semantics not fully decoded. Type 11 = felszíni vízrajz network, all project gauges live there (~1195 stations). Type 12 = hidromet network (~2030). 13/14 = other (groundwater, auto stations — not needed).
-- Response: JSON array. Key fields: `Tsz` (törzsszám = station id), `Nev` (station name), lat/lon.
+- vmoType mapping decoded from SPA bundle (`getStationType`), corrected 2026-09-11 (earlier table here was wrong):
+
+| vmoType | Station type | Network | Stations (2026-09-11) |
+|---|---|---|---|
+| 11 | surface | felszíni vízrajz — all project gauges live here | ~1195 |
+| 1 | spring | forrás (Hévíz, Tapolca…) | 7 |
+| 12 | nearsurface | **talajvíz megfigyelő kutak** — project wells live here | ~2030 |
+| 13 | undersurface | **rétegvíz kutak** (Zámoly-1, Csákvár-1…) | 524 |
+| 14 | hidromet | hidrometeorológiai automata (ghosts exist: Tsz 700279 Agárd lists but returns no data) | 441 |
+
+- Response: JSON array. Key fields: `Tsz` (törzsszám = station id), `Nev` (station name), `Telepules`, lat/lon. Well lists (12/13) also carry `Npt` (13 only), `Aft` = **dataTransportType** code (not aquifer), `Uzem`.
 - Search by name substring, e.g. `Zámoly`, `Pátka`.
 
 ## Step 3 — data series
@@ -87,7 +97,7 @@ Field notes:
 | `adatTipusKod` | Always `100` in SPA. Leave `100`. |
 | `startTime`/`endTime` | Local time, `YYYY-MM-DDTHH:MM:SS`. Use `next-year-01-01` as endTime for full year — `Dec-31T00:00:00` omits Dec 31. |
 | `dataExtFilter` | `0` for non-precip. Precip (71): `60` hourly, `1440` daily, `null` all. Codes 299/303: `null`. |
-| `valueFilter` | `"Relativ"` (gauge datum) or `"Balti"` (Baltic sea level). SPA picks Balti for sealevel stations. `"Relativ"` matches yearbook tables. |
+| `valueFilter` | `"Relativ"` (gauge datum / depth below surface) or `"Balti"` (Baltic sea level, m.a.f.). Works for talajvíz wells too (code 69) — Balti gives the water table elevation directly (e.g. Pákozd 109.3–110.71 m.a.f. 1993–2026), enabling common-datum overlay with lake level. `"Relativ"` matches yearbook tables. |
 | `amKodFilter` | `[0]` always in SPA. |
 | `aggregateFilters` | Daily mean: block above verbatim. Omit whole block for raw (hourly) data. |
 | `dailyFilters` | Hourly variant exists (`centerMin` 0..1440 step 60, `dailyRangeFind:"nearestime"`). Not verified. |
@@ -105,6 +115,16 @@ Data type codes (from SPA bundle, `haf` objects):
 | 82 | Minimum hőmérséklet | °C |
 | 83 | Maximum hőmérséklet | °C |
 | 75 | Hóvastagság | cm |
+| 76 | Hóvízegyenérték | mm |
+| 92 | Forrás vízállás | cm |
+| 74 | Forrás vízhozam | l/s |
+| 69 | **Talajvízállás** | cm |
+| 70 | **Rétegvízszint** | m |
+| 299 | Talajnedvesség | % |
+| 303 | Talajhőmérséklet | °C |
+| 304 | Legnedvesség | % |
+
+- `stationtype` per code (SPA bundle): 68/87/85/89 surface, 71/81/82/83/75/76/299/303/304 hidromet, 92/74 spring, 69 nearsurface (vmoType 12), 70 undersurface (vmoType 13).
 
 Response:
 
@@ -148,6 +168,22 @@ Confirmed 2002 + 2025 availability (the two DB gap years):
 |---|---|---|---|
 | 142026 | zamoly_vizhozam | 365/365 days (inserted, doc_id=42) | 365/365 days (inserted, doc_id=43) |
 | 142421 | patka_vizhozam | 365/365 days (inserted, doc_id=42) | 363/365 days (inserted, doc_id=43; May 12+25 absent in VRA) |
+
+## Földalatti hálózat (talajvíz) — project wells
+
+Seven nearsurface (vmoType 12) wells ingested 2026-09-11 into `groundwater_obs` via `scripts/fetch_groundwater.py` (see EXTRACTION_GUIDE §14 for provenance, import_tracker for status). All seven have BOTH value modes (Relativ cm + Balti m.a.f.):
+
+| Tsz | Well | Points/mode | Window | Balti range (m.a.f.) |
+|---|---|---|---|---|
+| 825 | Pákozd | 16 493 | 1993-01 → 2026-03 | 109.30–110.71 |
+| 826 | Agárd | 20 553 | 1990-01 → 2026-08 | 104.51–108.51 |
+| 143969 | Agárd-2.új házak | 3 156 | 1998-01 → 2026-02 | 103.10–105.74 |
+| 143970 | AGÁRD-3.szennyvíztelep | 12 572 | 1998-01 → 2026-04 | 104.12–107.83 |
+| 667 | Velence | 18 415 | 1990-01 → 2026-05 | 131.71–133.57 |
+| 582 | Kápolnásnyék | 34 680 | 1990-01 → 2026-08 | 117.85–122.73 |
+| 587 | Börgönd | 6 387 | 1990-01 → 2025-03 | 110.05–115.58 |
+
+Rétegvíz (vmoType 13, code 70) not ingested — deferred. Near-lake wells probed 2026-09-11: 781 Zámoly-1 (31 813 pont, 1990→2024), 770 Csákvár-1 (artézi, pozitív values), 783 Seregélyes-1, 3987 Iszkaszentgyörgy Kp-248.
 
 ## Provenance warning — read before inserting into vizmerleg.db
 

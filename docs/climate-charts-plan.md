@@ -116,6 +116,28 @@ Running sum of storage change.
 
 Rationale: converts year-to-year noise into single debt curve. Effective as summary stat tile beside chart 1.
 
+### 13. Lake and talajvíz breathing together, 1990-2026 (klima page)
+
+Lake level (m.a.f., `monthly_station_obs.atlag_cm` + `station_metadata_history.nullpont_mBf`) and
+Pákozd/Agárd/Kápolnásnyék talajvíz (Balti m.a.f.) monthly means on one axis, 2019-2022 drought
+years shaded.
+
+Source: `groundwater_obs` (VRA földalatti, balti mode) + `monthly_station_obs`. External source
+family — OVF VRA open data, see `docs/vra-api.md`.
+
+Rationale: direct evidence for chart 4's mechanism claim — the shallow aquifer dropped ~1 m
+in 2019-2022 and recovered only partially, consuming runoff before it reaches the lake.
+
+### 14. Talajvízmélység small multiples, 1990-2026 (adattár page)
+
+Filled depth-area panels per well, Relativ mode (cm below surface), y axis inverted so deeper
+reads lower. Monthly means neutralize the 2018 telemetry switchover.
+
+Source: `groundwater_obs` (VRA földalatti, relativ mode), 7 registry wells.
+
+Rationale: intuitive "how deep is the water under your feet" view; per-well panels avoid
+cross-well datum ambiguity.
+
 ## Blocking data-quality items
 
 ### Column-mapping mismatch across 1996 — resolved 2026-08-25

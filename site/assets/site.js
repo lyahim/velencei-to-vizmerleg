@@ -43,6 +43,38 @@ function colorFor(i) {
   return PALETTE[i % PALETTE.length];
 }
 
+// Shades horizontal label-index spans (e.g. drought years) behind the datasets.
+// Supports category labels beginning with a 4-digit year ("1994-01", 2022, ...).
+const yearRangeShadePlugin = {
+  id: "yearRangeShade",
+  beforeDatasetsDraw(chart, args, opts) {
+    const ranges = (opts && opts.ranges) || [];
+    if (!ranges.length) return;
+    const labels = chart.data.labels || [];
+    const years = labels.map((l) => {
+      const m = String(l).match(/^-?\d{4}/);
+      return m ? parseInt(m[0], 10) : null;
+    });
+    const x = chart.scales.x;
+    const area = chart.chartArea;
+    chart.ctx.save();
+    ranges.forEach((r) => {
+      let i0 = null, i1 = null;
+      years.forEach((y, i) => {
+        if (y === null) return;
+        if (y >= r.from && i0 === null) i0 = i;
+        if (y <= r.to) i1 = i;
+      });
+      if (i0 === null || i1 === null || i1 < i0) return;
+      const px0 = x.getPixelForValue(i0);
+      const px1 = x.getPixelForValue(i1);
+      chart.ctx.fillStyle = "rgba(220, 53, 69, 0.08)";
+      chart.ctx.fillRect(px0, area.top, px1 - px0, area.bottom - area.top);
+    });
+    chart.ctx.restore();
+  },
+};
+
 // --- Chart.js construction per panel type -----------------------------
 
 function buildChartConfig(panel) {
@@ -76,6 +108,9 @@ function buildChartConfig(panel) {
         return formatLabel(this.getLabelForValue(value), panel);
       };
     }
+    if (panel.reverse_y) {
+      scales.y.reverse = true;
+    }
     const tooltipCallbacks = panel.label_epoch
       ? { callbacks: { title: (items) => (items.length ? formatLabel(items[0].label, panel) : "") } }
       : {};
@@ -85,9 +120,15 @@ function buildChartConfig(panel) {
       options: {
         responsive: true,
         interaction: { mode: "index", intersect: false },
-        plugins: { legend: { position: "top" }, title: { display: false }, tooltip: tooltipCallbacks },
+        plugins: {
+          legend: { position: "top" },
+          title: { display: false },
+          tooltip: tooltipCallbacks,
+          ...(panel.year_ranges ? { yearRangeShade: { ranges: panel.year_ranges } } : {}),
+        },
         scales,
       },
+      plugins: panel.year_ranges ? [yearRangeShadePlugin] : undefined,
     };
   }
   if (panel.type === "warming_stripes") {

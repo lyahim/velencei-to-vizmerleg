@@ -13,6 +13,29 @@
   <p class="lead">A nyers adatbázis-táblák böngészhetők, szűrhetők, rendezhetők. Egy tábla adatai csak a
     fül megnyitásakor töltődnek be.</p>
 
+  <section class="mb-5">
+    <h2>Milyen mélyen van a víz a lábunk alatt?</h2>
+    <p>A Velencei-tó környéki hét talajvízkútból mért vízmélység a felszín alatt (cm), havi
+      átlagokban. Minden kút saját mércén: a kútak értékei <strong>nem közvetlenül hasonlíthatók
+      egymáshoz</strong>. A 2019-2022-es aszály minden kútban mélyebb talajvizet hozott.</p>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3" id="gw-depth-panels">
+      <div class="col"><h3 class="h6 mt-2">Kápolnásnyék</h3><div class="chart-panel" data-chart="talajviz_melyseg" data-panel="582">
+        <canvas></canvas><p class="chart-note text-muted small"></p></div></div>
+      <div class="col"><h3 class="h6 mt-2">Börgönd</h3><div class="chart-panel" data-chart="talajviz_melyseg" data-panel="587">
+        <canvas></canvas></div></div>
+      <div class="col"><h3 class="h6 mt-2">Velence</h3><div class="chart-panel" data-chart="talajviz_melyseg" data-panel="667">
+        <canvas></canvas></div></div>
+      <div class="col"><h3 class="h6 mt-2">Pákozd</h3><div class="chart-panel" data-chart="talajviz_melyseg" data-panel="825">
+        <canvas></canvas></div></div>
+      <div class="col"><h3 class="h6 mt-2">Agárd</h3><div class="chart-panel" data-chart="talajviz_melyseg" data-panel="826">
+        <canvas></canvas></div></div>
+      <div class="col"><h3 class="h6 mt-2">Agárd-2.új házak</h3><div class="chart-panel" data-chart="talajviz_melyseg" data-panel="143969">
+        <canvas></canvas></div></div>
+      <div class="col"><h3 class="h6 mt-2">Agárd-3.szennyvíztelep</h3><div class="chart-panel" data-chart="talajviz_melyseg" data-panel="143970">
+        <canvas></canvas></div></div>
+    </div>
+  </section>
+
   <ul class="nav nav-tabs" id="tableTabs" role="tablist"></ul>
   <div class="tab-content border border-top-0 p-3" id="tableTabContent"></div>
 </main>
@@ -20,5 +43,6 @@
 {{FOOTER}}
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 <script>window.DATA_VERSION = "{{DATA_VERSION}}";</script>
 <script src="./assets/site.js"></script>
